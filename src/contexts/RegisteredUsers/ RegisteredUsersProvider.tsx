@@ -7,9 +7,22 @@ export const RegisteredUsersProvider = ({ children }: { children: JSX.Element })
 
     const [users, setUsers] = useState<User[]>([]);
 
+    useEffect(() => {
+        let getUser = localStorage.getItem("users");
+        if (getUser !== null) {
+            let getUser = localStorage.getItem("users");
+            let local: Array<User> = [];
+            local = JSON.parse(getUser)
+            setUsers(local)
+        }
+    }, [])
+
     const login = async (name: string, password: string) => {
-        if (lodash.size(users) > 0) {
-            let matchUser = users.filter((person) => {
+        let getUser = localStorage.getItem("users");
+        let local: Array<User> = [];
+        local = JSON.parse(getUser)
+        if (lodash.size(local) > 0) {
+            let matchUser = local.filter((person) => {
                 if (person.name === name && person.password === password) {
                     return person;
                 }
@@ -25,6 +38,11 @@ export const RegisteredUsersProvider = ({ children }: { children: JSX.Element })
         const existUser = findUser(name);
         if (!existUser) {
             setUsers(preUsers => [...preUsers, { name: name, password: password }])
+            let local: Array<User> = [];
+            local = [...users, { name: name, password: password }]
+            let localStringify = JSON.stringify(local)
+            localStorage.setItem("users", localStringify);
+
             return false;
         } else {
             return true;
